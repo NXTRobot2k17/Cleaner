@@ -1,5 +1,5 @@
 package Framework;
 
-public enum SensorEnum {
+public enum Port {
 	LeftBumper, RightBumper, Light, SonicWave
 }

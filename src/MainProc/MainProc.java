@@ -12,19 +12,19 @@ public class MainProc {
 		Sensors.check();
 		Drivetrain.check();
 		values=new int[2];
-		values[0] = Sensors.get(SensorEnum.Light);
-		values[1] = Sensors.get(SensorEnum.SonicWave);
+		values[0] = Sensors.get(Port.Light);
+		values[1] = Sensors.get(Port.SonicWave);
 		hbTimer=new CTimer(100);
 	}
 	
 	public void run()
 	{
-		if(Sensors.get(SensorEnum.LeftBumper)==1 || Sensors.get(SensorEnum.RightBumper)==1)
+		if(Sensors.get(Port.LeftBumper)==1 || Sensors.get(Port.RightBumper)==1)
 		{
 			
 		}
-		lightTmp = Sensors.get(SensorEnum.Light);
-		sonicTmp = Sensors.get(SensorEnum.SonicWave);
+		lightTmp = Sensors.get(Port.Light);
+		sonicTmp = Sensors.get(Port.SonicWave);
 		if((lightTmp-values[0]) > 1)
 		{
 			

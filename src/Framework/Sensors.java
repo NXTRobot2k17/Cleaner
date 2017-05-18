@@ -12,7 +12,7 @@ public class Sensors {
 		
 	}
 	
-	public static int get(SensorEnum s)
+	public static int get(Port s)
 	{
 		switch(s)
 		{
