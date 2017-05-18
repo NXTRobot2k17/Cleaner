@@ -5,6 +5,8 @@ import components.*;
 
 public class MainProc {
 
+	ISensor[] sensors = new ISensor[4];
+	
 	public void init()
 	{
 		

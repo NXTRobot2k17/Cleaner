@@ -1,7 +1,8 @@
 package Framework;
 
+import lejos.nxt.SensorPort;
 import MainProc.*;
-
+import interfaces.*;
 
 public class Main {
 	static MainProc proc=new MainProc();
