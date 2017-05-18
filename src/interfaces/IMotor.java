@@ -1,5 +1,6 @@
 package interfaces;
 import lejos.*;
+
 public interface IMotor {
 	public void forwards();
 	public void backwards();

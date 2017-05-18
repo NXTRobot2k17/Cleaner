@@ -1,6 +1,5 @@
 package Framework;
 
-import lejos.nxt.SensorPort;
 import MainProc.*;
 import interfaces.*;
 
