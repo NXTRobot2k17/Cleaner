@@ -17,8 +17,6 @@ public class MainProc {
 		}
 		inStandby = false;
 		values = new int[2];
-		values[0] = Sensors.get(Port.Light);
-		values[1] = Sensors.get(Port.SonicWave);
 		heartbeatTimer = new CTimer(100);
 		shutdownTimer = new CTimer(300000);
 	}
@@ -34,10 +32,7 @@ public class MainProc {
 
 		if(heartbeatTimer.get())
 		{
-			if(!(Drivetrain.heartbeat() && Sensors.heartbeat()))
-			{
-				standby();
-			}
+			
 		}
 	}
 	
