@@ -1,6 +1,6 @@
 package interfaces;
 
-public interface IMotor {
+public interface IMotor extends ISensor {
 	public void forwards();
 	public void backwards();
 	public void setSpeed(int speed);
