@@ -3,45 +3,49 @@ import Framework.*;
 
 public class MainProc {
 
-	CTimer hbTimer;
+	CTimer heartbeatTimer, shutdownTimer;
 	int[] values;
 	int lightTmp, sonicTmp;
+	boolean inStandby=false;
 	
 	public void init()
 	{
-		Sensors.check();
-		Drivetrain.check();
-		values=new int[2];
-		values[0] = Sensors.get(Port.Light);
-		values[1] = Sensors.get(Port.SonicWave);
-		hbTimer=new CTimer(100);
+		if(!checkComponents())
+		{
+			standby();
+			return;
+		}
+		inStandby = false;
+		values = new int[2];
+		heartbeatTimer = new CTimer(100);
+		shutdownTimer = new CTimer(300000);
 	}
 	
 	public void run()
 	{
-		if(Sensors.get(Port.LeftBumper)==1 || Sensors.get(Port.RightBumper)==1)
+		if(inStandby)
+		{
+			init();
+			return;
+		}
+		
+
+		if(heartbeatTimer.get())
 		{
 			
 		}
-		lightTmp = Sensors.get(Port.Light);
-		sonicTmp = Sensors.get(Port.SonicWave);
-		if((lightTmp-values[0]) > 1)
-		{
-			
-		}
-		if((values[1]-sonicTmp) > 1)
-		{
-			
-		}
-		values[0] = lightTmp;
-		values[1] = sonicTmp;
-		if(hbTimer.get())
-		{
-			if(!(Drivetrain.heartbeat() && Sensors.heartbeat()))
-			{
-				Drivetrain.Stop();
-				Main.keepAlive = false;
-			}
-		}
+	}
+	
+	private boolean checkComponents()
+	{
+		return false;
+	}
+	
+	private void standby()
+	{
+		inStandby = true;
+		Drivetrain.Stop();
+		if(shutdownTimer.get())
+			Main.keepAlive = false;
 	}
 }

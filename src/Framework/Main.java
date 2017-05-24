@@ -11,6 +11,7 @@ public class Main {
 		proc.init();
 		while(keepAlive)
 			proc.run();
+		//use timer for 1kHz rate
 	}
 
 }
