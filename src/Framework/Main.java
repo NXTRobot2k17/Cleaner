@@ -1,17 +1,22 @@
 package Framework;
 
 import MainProc.*;
+import lejos.util.*;
 
-public class Main {
+public class Main 
+{
 	static MainProc proc=new MainProc();
+	static TimerListener listener = new HwTimer(proc);
 	public static boolean keepAlive=true;
+	
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		proc.init();
-		while(keepAlive)
-			proc.run();
-		//use timer for 1kHz rate
+		Timer timer=new Timer(1, listener);
+		timer.start();
+		while(keepAlive){}
+		timer.stop();
 	}
 
 }

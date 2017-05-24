@@ -6,7 +6,7 @@ public class MainProc {
 	CTimer heartbeatTimer, shutdownTimer;
 	int[] values;
 	int lightTmp, sonicTmp;
-	boolean inStandby=false;
+	boolean inStandby = false;
 	
 	public void init()
 	{
@@ -15,7 +15,6 @@ public class MainProc {
 			standby();
 			return;
 		}
-		inStandby = false;
 		values = new int[2];
 		heartbeatTimer = new CTimer(100);
 		shutdownTimer = new CTimer(300000);
