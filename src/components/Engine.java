@@ -35,14 +35,4 @@ public class Engine implements IMotor {
 	public void stop() {
 		Engine.stop();
 	}
-
-	@Override
-	public void setport() {
-		
-	}
-	@Override
-	public boolean isAlive() {
-		return false;
-	}
-
 }
