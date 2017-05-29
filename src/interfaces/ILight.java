@@ -6,4 +6,5 @@ public interface ILight extends ISensor {
 	public int readValue();
 	public void calibrateLow();
 	public void calibrateHigh();
+	public boolean isAlive();
 }

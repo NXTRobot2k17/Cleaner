@@ -18,5 +18,13 @@ public class Ultrasonic implements IUltrasonic {
 	public int getDistance() {
 		return sonar.getDistance();
 	}
+	@Override
+	public boolean isAlive() {
+		if(sonar.getDistance() == 255)
+		{
+			return false;
+		}
+		return true;
+	}
 
 }
