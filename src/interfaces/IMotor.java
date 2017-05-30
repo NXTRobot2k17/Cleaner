@@ -12,4 +12,6 @@ public interface IMotor extends ISensor {
 	public void stop();
 	public void setSpeedLeft(int speed);
 	public void setSpeedRight(int speed);
+	public void rotateLeft();
+	public void rotateRight();
 }

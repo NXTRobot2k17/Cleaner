@@ -60,4 +60,14 @@ public class Engine implements IMotor {
 	public void rightBackwards() {
 		EngineLeft.forward();
 	}
+	@Override
+	public void rotateLeft() {
+		EngineLeft.forward();
+		EngineRight.backward();
+	}
+	@Override
+	public void rotateRight() {
+		EngineLeft.backward();
+		EngineRight.forward();
+	}
 }

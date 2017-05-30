@@ -7,13 +7,15 @@ import lejos.nxt.SensorPort;
 public class Hardware  implements iHardware{
 
 	public Light light;
-	public Touch touch;
+	public Touch touchLeft;
+	public Touch touchRight;
 	public Ultrasonic sonic;
 	public Engine engine;
 	
-	public Hardware(SensorPort lp, SensorPort tp, SensorPort sp, NXTRegulatedMotor left, NXTRegulatedMotor right) {
+	public Hardware(SensorPort lp, SensorPort t1p, SensorPort t2p, SensorPort sp, NXTRegulatedMotor left, NXTRegulatedMotor right) {
 		light = new Light(lp);
-		touch = new Touch(tp);
+		touchLeft = new Touch(t1p);
+		touchRight = new Touch(t2p);
 		sonic = new Ultrasonic(sp);
 		engine = new Engine(left, right);
 	}
