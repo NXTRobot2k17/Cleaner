@@ -15,7 +15,7 @@ public class Main
 		proc.init();
 		Timer timer=new Timer(1, listener);
 		timer.start();
-		while(keepAlive){}
+		while(keepAlive);
 		timer.stop();
 	}
 
