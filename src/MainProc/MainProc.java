@@ -43,7 +43,6 @@ public class MainProc {
 	private void standby()
 	{
 		inStandby = true;
-		Drivetrain.Stop();
 		if(shutdownTimer.get())
 			Main.keepAlive = false;
 	}
