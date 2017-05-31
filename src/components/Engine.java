@@ -70,4 +70,9 @@ public class Engine implements IMotor {
 		EngineLeft.backward();
 		EngineRight.forward();
 	}
+	@Override
+	public void setspeed(int speed) {
+		EngineLeft.setSpeed(speed);
+		EngineRight.setSpeed(speed);
+	}
 }
