@@ -32,4 +32,13 @@ public class Light implements ILight {
 		light.calibrateHigh();
 	}
 
+	@Override
+	public boolean isAlive() {
+		if(light.readValue() == 0)
+		{
+			return false;
+		}
+		return true;
+	}
+
 }
