@@ -37,6 +37,16 @@ public class MainProc {
 				return; 				
 			}
 		}
+		sonicTmp=cHw.sonic.getDistance();
+		if(sonicTmp < (Sensors.sonicMin + Sensors.sonicDelta))
+		{
+			cHw.engine.stop();
+		}
+		lightTmp=cHw.light.readValue();
+		if(lightTmp>Sensors.lightMax)
+		{
+			cHw.engine.stop();
+		}
 	}
 	
 	private void standby()
