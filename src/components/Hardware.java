@@ -5,7 +5,7 @@ import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 
 public class Hardware  implements iHardware{
-	private DisplayPackage dp;
+	private DisplayPackage dp = new DisplayPackage();
 	public Light light;
 	public Touch touchLeft;
 	public Touch touchRight;
@@ -25,26 +25,26 @@ public class Hardware  implements iHardware{
 	 */
 	@Override
 	public int isAlive() {
-		if(light.isAlive() && sonic.isAlive() == false)
+		if((!light.isAlive() && !sonic.isAlive()) == true)
 		{
 			dp.sonarInfo = "Sonar: failed";
 			dp.sonicInfo = "Sonic: failed";
 			lcd.update(dp);
-			engine.stop();
+			//engine.stop();
 			return 3;
 		}
 		if(light.isAlive() == false)
 		{
 			dp.sonarInfo = "Sonar: failed";
 			lcd.update(dp);
-			engine.stop();
+			//engine.stop();
 			return 1;
 		}
 		if(sonic.isAlive() == false)
 		{
 			dp.sonicInfo = "Sonic: failed";
 			lcd.update(dp);
-			engine.stop();
+			//engine.stop();
 			return 2;
 		}
 		dp.sonarInfo = "Sonar: OK";
