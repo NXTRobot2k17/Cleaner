@@ -79,4 +79,8 @@ public class Engine implements IMotor {
 	public void isAlive() {
 		
 	}
+	@Override
+	public boolean isMoving() {
+		return (EngineLeft.isMoving() || EngineRight.isMoving());
+	}
 }
