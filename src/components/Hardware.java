@@ -27,30 +27,30 @@ public class Hardware  implements iHardware{
 	public int isAlive() {
 		if(light.isAlive() && sonic.isAlive() == false)
 		{
-			dp.sonarInfo = "failed";
-			dp.sonicInfo = "failed";
+			dp.sonarInfo = "Sonar: failed";
+			dp.sonicInfo = "Sonic: failed";
 			lcd.update(dp);
 			engine.stop();
 			return 3;
 		}
 		if(light.isAlive() == false)
 		{
-			dp.sonarInfo = "failed";
+			dp.sonarInfo = "Sonar: failed";
 			lcd.update(dp);
 			engine.stop();
 			return 1;
 		}
 		if(sonic.isAlive() == false)
 		{
-			dp.sonicInfo = "failed";
+			dp.sonicInfo = "Sonic: failed";
 			lcd.update(dp);
 			engine.stop();
 			return 2;
 		}
-		dp.sonarInfo = "OK";
-		dp.sonicInfo = "OK";
-		dp.MotorLeft = "OK";
-		dp.Motorright = "OK";
+		dp.sonarInfo = "Sonar: OK";
+		dp.sonicInfo = "Sonic: OK";
+		dp.MotorLeft = "Motor: OK";
+		dp.Motorright = "Motor: OK";
 		lcd.update(dp);
 		return 0;
 	}
