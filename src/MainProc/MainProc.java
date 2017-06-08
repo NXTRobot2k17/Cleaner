@@ -1,5 +1,6 @@
 package MainProc;
 import Framework.*;
+import components.*;
 
 public class MainProc {
 
@@ -7,10 +8,11 @@ public class MainProc {
 	int[] values;
 	int lightTmp, sonicTmp;
 	boolean inStandby = false;
+	Hardware cHw = new Hardware();
 	
 	public void init()
 	{
-		if(!checkComponents())
+		if(cHw.isAlive() != 0)
 		{
 			standby();
 			return;
@@ -24,25 +26,26 @@ public class MainProc {
 	{
 		if(inStandby)
 		{
-			init();
+			standby();
 			return;
 		}
-		
-
 		if(heartbeatTimer.get())
 		{
-			
+			if(cHw.isAlive()!=0)
+			{
+				inStandby=true;
+				return; 				
+			}
 		}
-	}
-	
-	private boolean checkComponents()
-	{
-		return false;
 	}
 	
 	private void standby()
 	{
-		inStandby = true;
+		if(cHw.isAlive() == 0)
+		{
+			inStandby=false;
+			return;
+		}
 		if(shutdownTimer.get())
 			Main.keepAlive = false;
 	}
