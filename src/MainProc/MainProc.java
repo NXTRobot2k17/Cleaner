@@ -6,7 +6,7 @@ public class MainProc {
 
 	CTimer heartbeatTimer, shutdownTimer;
 	int[] values;
-	int lightTmp, sonicTmp;
+	int lightTmp=0, sonicTmp=0;
 	boolean inStandby = false;
 	Hardware cHw = new Hardware();
 	
@@ -39,6 +39,10 @@ public class MainProc {
 		}
 		sonicTmp=cHw.sonic.getDistance();
 		if(sonicTmp < (Sensors.sonicMin + Sensors.sonicDelta))
+		{
+			cHw.engine.stop();
+		}
+		if(cHw.touchLeft.isPressed() || cHw.touchRight.isPressed())
 		{
 			cHw.engine.stop();
 		}
