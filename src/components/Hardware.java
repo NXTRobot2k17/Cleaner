@@ -1,7 +1,7 @@
 package components;
 
 import interfaces.iHardware;
-import lejos.nxt.NXTRegulatedMotor;
+import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 
 public class Hardware  implements iHardware{
@@ -13,12 +13,12 @@ public class Hardware  implements iHardware{
 	public Engine engine;
 	public Display lcd = new Display();
 	
-	public Hardware(SensorPort lp, SensorPort t1p, SensorPort t2p, SensorPort sp, NXTRegulatedMotor left, NXTRegulatedMotor right) {
-		light = new Light(lp);
-		touchLeft = new Touch(t1p);
-		touchRight = new Touch(t2p);
-		sonic = new Ultrasonic(sp);
-		engine = new Engine(left, right);
+	public Hardware() {
+		light = new Light(SensorPort.S3);
+		touchLeft = new Touch(SensorPort.S1);
+		touchRight = new Touch(SensorPort.S2);
+		sonic = new Ultrasonic(SensorPort.S4);
+		engine = new Engine(Motor.A, Motor.C);
 	}
 	/* (non-Javadoc)
 	 * @see interfaces.iHardware#isAlive()
