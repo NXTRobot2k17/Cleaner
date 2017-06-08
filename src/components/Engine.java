@@ -75,4 +75,8 @@ public class Engine implements IMotor {
 		EngineLeft.setSpeed(speed);
 		EngineRight.setSpeed(speed);
 	}
+	@Override
+	public void isAlive() {
+		
+	}
 }
