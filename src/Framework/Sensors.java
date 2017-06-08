@@ -1,11 +1,9 @@
 package Framework;
 
-import interfaces.*;
-import components.*;
-
 public class Sensors 
 {
-	
-	static ISensor[] sensors=new ISensor[4];
-	
+	public static int lightDelta;
+	public static int sonicDelta;
+	public static int lightMax;
+	public static int sonicMin;
 }
