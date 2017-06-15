@@ -3,6 +3,7 @@ package components;
 import interfaces.iHardware;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
+import lejos.nxt.Sound;
 
 public class Hardware  implements iHardware{
 	private DisplayPackage dp = new DisplayPackage();
@@ -30,6 +31,7 @@ public class Hardware  implements iHardware{
 			dp.sonarInfo = "Sonar: failed";
 			dp.sonicInfo = "Sonic: failed";
 			lcd.update(dp);
+			Sound.beep();
 			engine.stop();
 			return 3;
 		}
@@ -37,6 +39,7 @@ public class Hardware  implements iHardware{
 		{
 			dp.sonarInfo = "Sonar: failed";
 			lcd.update(dp);
+			Sound.beep();
 			engine.stop();
 			return 1;
 		}
@@ -44,6 +47,7 @@ public class Hardware  implements iHardware{
 		{
 			dp.sonicInfo = "Sonic: failed";
 			lcd.update(dp);
+			Sound.beep();
 			engine.stop();
 			return 2;
 		}
