@@ -10,6 +10,11 @@ public class MainProc {
 	int errorCode=0;
 	boolean inStandby = false;
 	Hardware cHw = new Hardware();
+	int lightMax = 28, lightDelta;
+	int sonicMin = 25, sonicDelta;
+	int yellowZone=65, redZone=40;
+	boolean invertRotation=false;
+	boolean goBack=false;
 	
 	public void init()
 	{
@@ -21,7 +26,7 @@ public class MainProc {
 		lightTmp=cHw.light.readValue();
 		sonicTmp=cHw.sonic.getDistance();
 		heartbeatTimer = new CTimer(100);
-		shutdownTimer = new CTimer(300000);
+		shutdownTimer = new CTimer(600000);
 		errorTimer=new CTimer(1000);
 	}
 	
@@ -56,6 +61,43 @@ public class MainProc {
 			return;
 		}
 		errorTimer.reset();
+		
+		calcDelta();
+		
+		int light=cHw.light.readNormalizedValue();
+		if(light>lightMax || light<lightTmp-lightDelta)
+			errorCode=3;
+		else
+			lightTmp=light;
+		
+		int sonic=cHw.sonic.getDistance();
+		if(sonic<sonicMin || sonic<sonicTmp-sonicDelta)
+			errorCode=2;
+		else
+			sonicTmp=sonic;
+
+		if(cHw.touchLeft.isPressed() || cHw.touchRight.isPressed())
+			errorCode=1;
+		
+		if(sonicTmp<redZone)
+		{
+			cHw.engine.setspeed(200);
+		}
+		else if(sonicTmp<yellowZone)
+		{
+			cHw.engine.setspeed(400);
+		}
+		else
+		{
+			cHw.engine.setspeed(800);
+		}
+	}
+	
+	private void calcDelta()
+	{
+		double rpm =((double)cHw.engine.getSpeedEngineLeft()/(double)Integer.MAX_VALUE)*170.0;
+		double speed=(2*Math.PI*0.025)*(rpm/60);
+		sonicDelta=(int)((speed/1000)*1.05); //delta is 105% of way in T=1/1000s
 	}
 	
 	private void bumperError()
@@ -68,20 +110,43 @@ public class MainProc {
 	{
 		if(errorTimer.count())
 			errorCode=0;
-		cHw.engine.setspeed(20);
-		cHw.engine.rotateLeft();
+		dodge();
 	}
 	
 	private void lightError()
 	{
-		if(errorTimer.get()==1000)
-			Sound.beep();
 		if(errorTimer.count())
 			errorCode=0;
+		dodge();
+	}
+	
+	private void dodge()
+	{
+		if(errorTimer.get()%50==0)
+			Sound.beep();
+		if(cHw.touchLeft.isPressed())
+			invertRotation=true;
+		if(cHw.touchRight.isPressed() && invertRotation)
+			goBack=true;
+		else if(cHw.touchRight.isPressed())
+			invertRotation=false;
 		cHw.engine.setspeed(20);
-		if(errorTimer.get()>900)
+		if(goBack)
+		{
+			if(errorTimer.get()<800)
+			{
+				goBack=false;
+				errorTimer.reset();
+				cHw.engine.stop();
+			}
 			cHw.engine.backwards();
-		cHw.engine.rotateLeft();
+		}else
+		{
+			if(!invertRotation)
+				cHw.engine.rotateLeft();
+			else
+				cHw.engine.rotateRight();
+		}
 	}
 	
 	private void standby()
