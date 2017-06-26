@@ -10,11 +10,16 @@ public class CTimer {
 		this.value=value;
 	}
 	
-	public boolean get()
+	public boolean count()
 	{
 		if(value==0)
 			value=startValue;
 		return 0 == value--;
+	}
+	
+	public int get()
+	{
+		return value;
 	}
 	
 	public void reset()
