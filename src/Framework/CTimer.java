@@ -14,8 +14,8 @@ public class CTimer {
 	{
 		if(value==0)
 			value=startValue;
-		--value;
-		return 0 == value;
+		value-=1;
+		return (value == 0);
 	}
 	
 	public int get()

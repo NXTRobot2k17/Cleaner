@@ -24,7 +24,7 @@ public class Hardware  implements iHardware{
 	 */
 	@Override
 	public int isAlive() {
-		//dp.otherinfo = Integer.toString(sonic.getDistance()) + " " + Integer.toString(light.readValue());
+		dp.otherinfo = Integer.toString(sonic.getDistance()) + " " + Integer.toString(light.readValue());
 		if((!light.isAlive() && !sonic.isAlive()) == true)
 		{
 			dp.sonarInfo = "Sonar: failed";
@@ -53,6 +53,11 @@ public class Hardware  implements iHardware{
 		dp.sonicInfo = "Sonic: OK";
 		lcd.update(dp);
 		return 0;
+	}
+	public void error(int error)
+	{
+		dp.errorcode = Integer.toString(error);
+		lcd.update(dp);
 	}
 
 }

@@ -1,6 +1,7 @@
 package Framework;
 
 import MainProc.*;
+import lejos.nxt.Button;
 import lejos.util.*;
 
 public class Main 
@@ -15,7 +16,9 @@ public class Main
 		proc.init();
 		Timer timer=new Timer(1, listener);
 		timer.start();
-		while(keepAlive);
+		while(keepAlive)
+			if(Button.ESCAPE.isDown())
+				break;
 		timer.stop();
 	}
 

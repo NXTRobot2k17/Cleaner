@@ -4,15 +4,19 @@ import components.*;
 import lejos.nxt.Sound;
 
 public class MainProc {
-
 	CTimer heartbeatTimer, shutdownTimer, errorTimer, standbyTimer;
-	int lightTmp, sonicTmp;
-	int errorCode=0;
+	int lightTmp=0, sonicTmp=0;
+	int errorCode;
 	boolean inStandby = false;
 	Hardware cHw = new Hardware();
-	int lightMin = 40, lightMax=80, lightDelta;
-	int sonicMin = 12, sonicDelta;
-	int yellowZone=21, redZone=16;
+	int lightMin = -20, lightMax=100, lightDelta;
+	int[] light;
+	int lightCounter;
+	int[] sonic;
+	int sonicCounter;
+	int sonicMin = 16;
+	double sonicDelta;
+	int yellowZone=50, redZone=20;
 	boolean invertRotation=false;
 	boolean goBack=false;
 	
@@ -23,12 +27,15 @@ public class MainProc {
 			standby();
 			return;
 		}
-		lightTmp=cHw.light.readValue();
-		sonicTmp=cHw.sonic.getDistance();
 		heartbeatTimer = new CTimer(100);
 		shutdownTimer = new CTimer(600000);
 		errorTimer=new CTimer(3000);
 		standbyTimer=new CTimer(1000);
+		errorCode=0;
+		light=new int[64];
+		lightCounter=0;
+		sonic=new int[32];
+		sonicCounter=0;
 	}
 	
 	public void run()
@@ -37,9 +44,8 @@ public class MainProc {
 		{
 			standby();
 			return;
-		}
-		
-		shutdownTimer.reset();
+		}else		
+			shutdownTimer.reset();
 		if(heartbeatTimer.count())
 		{
 			if(cHw.isAlive()!=0)
@@ -48,9 +54,11 @@ public class MainProc {
 				return; 				
 			}
 		}
+		cHw.error(errorCode);
 		switch(errorCode)
 		{
 		case 0:
+			errorTimer.reset();
 			break;
 		case 1:
 			bumperError();
@@ -62,59 +70,86 @@ public class MainProc {
 			lightError();
 			return;
 		}
-		errorTimer.reset();
 		
-		calcDelta();
 		
-		int light=cHw.light.readNormalizedValue();
-		if(light<lightMin || light>lightMax || light<lightTmp-lightDelta)
-			errorCode=3;
-		else
-			lightTmp=light;
-
-		int sonic=cHw.sonic.getDistance();
-		if(sonic<sonicMin || sonic<sonicTmp-sonicDelta)
-			errorCode=2;
-		else
-			sonicTmp=sonic;
-
+		light[lightCounter%64] = cHw.light.readValue();
+		lightCounter++;
+		if(lightCounter>=64)
+		{
+			int lightValue=0;
+			for(int i=0; i<64; i++)
+				lightValue+=light[i];
+			lightValue/=64;
+			if(lightValue<lightMin || lightValue>lightMax)
+				errorCode=3;
+			else
+				lightTmp=lightValue;
+		}
+		
+		sonic[sonicCounter%32] = cHw.sonic.getDistance();
+		sonicCounter++;
+		if(sonicCounter>=32)
+		{
+			int sonicValue=0;
+			for(int i=0; i<32; i++)
+				sonicValue+=sonic[i];
+			sonicValue/=32;
+			if(sonicValue<yellowZone && sonicValue<sonicTmp-25 && sonicTmp!=0)
+				errorCode=2;
+			else if(sonicValue<sonicMin && errorCode == 0)
+				errorCode=2;
+			else
+				sonicTmp=sonicValue;
+		}
+		
 		if(cHw.touchLeft.isPressed() || cHw.touchRight.isPressed())
 			errorCode=1;
-		
+		if(sonicTmp==0)
+			return;
 		if(sonicTmp<redZone)
 		{
-			cHw.engine.setspeed(200);
+			cHw.engine.setspeed(100);
 		}
 		else if(sonicTmp<yellowZone)
 		{
-			cHw.engine.setspeed(400);
+			cHw.engine.setspeed(250);
 		}
 		else
 		{
-			cHw.engine.setspeed(800);
+			cHw.engine.setspeed(500);
 		}
 		cHw.engine.forwards();
 	}
 	
 	private void calcDelta()
 	{
-		double rpm =((double)cHw.engine.getSpeedEngineLeft()/(double)Integer.MAX_VALUE)*170.0;
-		double speed=(2*Math.PI*0.028)*(rpm/60);
-		sonicDelta=(int)((speed/1000)*1.05); //delta is 105% of way in T=1/1000s
+		int dps=cHw.engine.getSpeedEngineLeft();
+		double rps=dps/360.0;
+		sonicDelta=(((2*Math.PI*0.028*rps)/100)*(cHw.engine.getSpeedEngineLeft()/10));
 	}
 	
 	private void bumperError()
 	{
-		if(errorTimer.count())
+		cHw.engine.stop();
+		if(errorTimer.count() || errorTimer.get()%500==0)
 			Sound.twoBeeps();
 	}
 	
 	private void sonicError()
 	{
+		cHw.engine.stop();
 		if(errorTimer.count())
 			errorCode=0;
-		if(errorTimer.get()<2500)
+		else if(errorTimer.get()<2500)
+		{
+			int sonic=cHw.sonic.getDistance();
+			if(sonic>sonicTmp && errorTimer.get()==2499)
+			{
+				errorCode=0;
+				return;
+			}
 			dodge();
+		}
 		else if(errorTimer.get()==2999)
 			Sound.twoBeeps();
 	}
@@ -123,7 +158,8 @@ public class MainProc {
 	{
 		if(errorTimer.count())
 			errorCode=0;
-		dodge();
+		else
+			dodge();
 	}
 	
 	private void dodge()
@@ -142,21 +178,22 @@ public class MainProc {
 			invertRotation=false;
 			errorTimer.reset();
 		}
-		cHw.engine.setspeed(20);
+		cHw.engine.setspeed(100);
 		if(goBack)
 		{
 			if(errorTimer.get()<800)
 			{
 				goBack=false;
+				invertRotation=false;
 				cHw.engine.stop();
 			}
 			cHw.engine.backwards();
 		}else
 		{
 			if(!invertRotation)
-				cHw.engine.rotateLeft();
-			else
 				cHw.engine.rotateRight();
+			else
+				cHw.engine.rotateLeft();
 		}
 	}
 	

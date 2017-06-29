@@ -11,7 +11,7 @@ public class Light implements ILight {
 	public Light(SensorPort port) {
 		light = new LightSensor(port);
 		light.setLow(530);
-		light.setHigh(350);
+		light.setHigh(150);
 	}
 	
 	@Override

@@ -13,6 +13,8 @@ public class Ultrasonic implements IUltrasonic {
 	private UltrasonicSensor sonar;
 	public Ultrasonic(SensorPort port) {
 		sonar = new UltrasonicSensor(port);
+		sonar.setMode(2);
+		sonar.setContinuousInterval(1);
 	}
 	@Override
 	public int getDistance() {
