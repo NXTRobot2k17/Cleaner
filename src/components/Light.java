@@ -10,6 +10,8 @@ public class Light implements ILight {
 	
 	public Light(SensorPort port) {
 		light = new LightSensor(port);
+		light.setLow(530);
+		light.setHigh(350);
 	}
 	
 	@Override
@@ -34,7 +36,7 @@ public class Light implements ILight {
 
 	@Override
 	public boolean isAlive() {
-		if(light.readValue() == 0)
+		if(light.readValue() == 294)
 		{
 			return false;
 		}

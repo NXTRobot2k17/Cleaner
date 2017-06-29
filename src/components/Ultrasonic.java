@@ -20,11 +20,10 @@ public class Ultrasonic implements IUltrasonic {
 	}
 	@Override
 	public boolean isAlive() {
-		if(sonar.getDistance() == 255)
+		if(sonar.getActualMode() == -3)
 		{
 			return false;
 		}
 		return true;
 	}
-
 }
