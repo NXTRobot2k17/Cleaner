@@ -93,6 +93,7 @@ public class MainProc {
 		{
 			cHw.engine.setspeed(800);
 		}
+		cHw.engine.forwards();
 	}
 	
 	private void calcDelta()
@@ -112,7 +113,10 @@ public class MainProc {
 	{
 		if(errorTimer.count())
 			errorCode=0;
-		dodge();
+		if(errorTimer.get()<2500)
+			dodge();
+		else if(errorTimer.get()==2999)
+			Sound.twoBeeps();
 	}
 	
 	private void lightError()
@@ -158,13 +162,14 @@ public class MainProc {
 	
 	private void standby()
 	{
+		cHw.engine.stop();
 		if(cHw.isAlive() == 0)
 		{
 			inStandby=false;
 			return;
 		}
 		if(standbyTimer.count())
-			Sound.beep();
+			Sound.twoBeeps();
 		if(shutdownTimer.count())
 			Main.keepAlive = false;
 	}
