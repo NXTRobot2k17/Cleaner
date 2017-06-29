@@ -5,7 +5,7 @@ import lejos.nxt.Sound;
 
 public class MainProc {
 
-	CTimer heartbeatTimer, shutdownTimer, errorTimer;
+	CTimer heartbeatTimer, shutdownTimer, errorTimer, standbyTimer;
 	int lightTmp, sonicTmp;
 	int errorCode=0;
 	boolean inStandby = false;
@@ -27,7 +27,8 @@ public class MainProc {
 		sonicTmp=cHw.sonic.getDistance();
 		heartbeatTimer = new CTimer(100);
 		shutdownTimer = new CTimer(600000);
-		errorTimer=new CTimer(1000);
+		errorTimer=new CTimer(3000);
+		standbyTimer=new CTimer(1000);
 	}
 	
 	public void run()
@@ -37,6 +38,7 @@ public class MainProc {
 			standby();
 			return;
 		}
+		
 		shutdownTimer.reset();
 		if(heartbeatTimer.count())
 		{
@@ -96,7 +98,7 @@ public class MainProc {
 	private void calcDelta()
 	{
 		double rpm =((double)cHw.engine.getSpeedEngineLeft()/(double)Integer.MAX_VALUE)*170.0;
-		double speed=(2*Math.PI*0.025)*(rpm/60);
+		double speed=(2*Math.PI*0.028)*(rpm/60);
 		sonicDelta=(int)((speed/1000)*1.05); //delta is 105% of way in T=1/1000s
 	}
 	
@@ -122,21 +124,26 @@ public class MainProc {
 	
 	private void dodge()
 	{
-		if(errorTimer.get()%50==0)
+		if(errorTimer.get()%500==0)
 			Sound.beep();
 		if(cHw.touchLeft.isPressed())
 			invertRotation=true;
 		if(cHw.touchRight.isPressed() && invertRotation)
+		{
 			goBack=true;
+			errorTimer.reset();
+		}
 		else if(cHw.touchRight.isPressed())
+		{
 			invertRotation=false;
+			errorTimer.reset();
+		}
 		cHw.engine.setspeed(20);
 		if(goBack)
 		{
 			if(errorTimer.get()<800)
 			{
 				goBack=false;
-				errorTimer.reset();
 				cHw.engine.stop();
 			}
 			cHw.engine.backwards();
@@ -156,6 +163,8 @@ public class MainProc {
 			inStandby=false;
 			return;
 		}
+		if(standbyTimer.count())
+			Sound.beep();
 		if(shutdownTimer.count())
 			Main.keepAlive = false;
 	}
