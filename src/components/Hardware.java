@@ -51,8 +51,6 @@ public class Hardware  implements iHardware{
 		}
 		dp.sonarInfo = "Sonar: OK";
 		dp.sonicInfo = "Sonic: OK";
-		dp.MotorLeft = "Motor: OK";
-		dp.Motorright = "Motor: OK";
 		lcd.update(dp);
 		return 0;
 	}
