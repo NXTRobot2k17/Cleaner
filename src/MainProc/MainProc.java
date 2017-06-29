@@ -10,9 +10,9 @@ public class MainProc {
 	int errorCode=0;
 	boolean inStandby = false;
 	Hardware cHw = new Hardware();
-	int lightMax = 28, lightDelta;
-	int sonicMin = 25, sonicDelta;
-	int yellowZone=65, redZone=40;
+	int lightMin = 40, lightMax=80, lightDelta;
+	int sonicMin = 12, sonicDelta;
+	int yellowZone=21, redZone=16;
 	boolean invertRotation=false;
 	boolean goBack=false;
 	
@@ -67,11 +67,11 @@ public class MainProc {
 		calcDelta();
 		
 		int light=cHw.light.readNormalizedValue();
-		if(light>lightMax || light<lightTmp-lightDelta)
+		if(light<lightMin || light>lightMax || light<lightTmp-lightDelta)
 			errorCode=3;
 		else
 			lightTmp=light;
-		
+
 		int sonic=cHw.sonic.getDistance();
 		if(sonic<sonicMin || sonic<sonicTmp-sonicDelta)
 			errorCode=2;
