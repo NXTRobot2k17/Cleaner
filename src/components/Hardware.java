@@ -3,8 +3,6 @@ package components;
 import interfaces.iHardware;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
-import lejos.nxt.Sound;
-
 public class Hardware  implements iHardware{
 	private DisplayPackage dp = new DisplayPackage();
 	public Light light;
@@ -26,28 +24,28 @@ public class Hardware  implements iHardware{
 	 */
 	@Override
 	public int isAlive() {
+		//dp.otherinfo = Integer.toString(sonic.getDistance()) + " " + Integer.toString(light.readValue());
 		if((!light.isAlive() && !sonic.isAlive()) == true)
 		{
 			dp.sonarInfo = "Sonar: failed";
 			dp.sonicInfo = "Sonic: failed";
 			lcd.update(dp);
-			Sound.beep();
 			engine.stop();
 			return 3;
 		}
 		if(light.isAlive() == false)
 		{
 			dp.sonarInfo = "Sonar: failed";
+			dp.sonicInfo = "Sonic: OK";
 			lcd.update(dp);
-			Sound.beep();
 			engine.stop();
 			return 1;
 		}
 		if(sonic.isAlive() == false)
 		{
 			dp.sonicInfo = "Sonic: failed";
+			dp.sonarInfo = "Sonar: OK";
 			lcd.update(dp);
-			Sound.beep();
 			engine.stop();
 			return 2;
 		}

@@ -5,4 +5,5 @@ public class DisplayPackage {
 	public String sonicInfo = "";
 	public String MotorLeft = "";
 	public String Motorright = "";
+	public String otherinfo = "";
 }
