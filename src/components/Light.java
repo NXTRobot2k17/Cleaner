@@ -36,7 +36,7 @@ public class Light implements ILight {
 
 	@Override
 	public boolean isAlive() {
-		if(light.readValue() == 294)
+		if(light.readValue() >= 130)
 		{
 			return false;
 		}

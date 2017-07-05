@@ -18,6 +18,11 @@ public class CTimer {
 		return (value == 0);
 	}
 	
+	public void set(int value)
+	{
+		this.value=value;
+	}
+	
 	public int get()
 	{
 		return value;
