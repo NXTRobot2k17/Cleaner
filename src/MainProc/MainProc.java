@@ -21,6 +21,7 @@ public class MainProc {
 	boolean invertRotation=false;
 	boolean goBack=false;
 	boolean wait;
+	boolean userConfirm=false;
 	int turnCounter=0;
 	Zone zone;
 	
@@ -57,8 +58,14 @@ public class MainProc {
 		}else		
 			shutdownTimer.reset();
 
-		if(cHw.sonic.getDistance()<yellowZone && sonicTmp==0)
+		if(Button.ENTER.isDown() && cHw.sonic.getDistance()<yellowZone && sonicTmp==0 || userConfirm)
+		{
+			userConfirm=true;
+		}
+		else if(cHw.sonic.getDistance()<yellowZone && sonicTmp==0)
+		{
 			return;
+		}
 		
 		if(sonicTmp==0 && sonicCounter==0)
 			Sound.beepSequence();
@@ -281,6 +288,7 @@ public class MainProc {
 
 	private void standby()
 	{
+		userConfirm=false;
 		cHw.engine.stop();
 		if(Button.ENTER.isDown() && cHw.isAlive()==0)
 		{
