@@ -1,4 +1,5 @@
 package MainProc;
+
 import Framework.*;
 import components.*;
 import lejos.nxt.Button;
@@ -6,23 +7,27 @@ import lejos.nxt.Sound;
 
 public class MainProc {
 	CTimer heartbeatTimer, shutdownTimer, errorTimer, standbyTimer, waitTimer;
+	Hardware cHw = new Hardware();
 	int lightTmp=0, sonicTmp=0;
 	int errorCode;
-	boolean inStandby = false;
-	Hardware cHw = new Hardware();
 	int lightMin = -20, lightMax=100, lightDelta;
 	int[] light;
 	int lightCounter;
 	int[] sonic;
 	int sonicCounter;
-	int sonicMin = 21;
+	int sonicMin = 25;
+	int sonicValue=0;
+	int sonicTmpValue=0;
+	int sonicPreErrorValue=255;
+	int yellowZone=90, redZone=35;
+	int turnCounter=0;
 	double sonicDelta;
-	int yellowZone=90, redZone=45;
+	boolean inStandby = false;
 	boolean invertRotation=false;
 	boolean goBack=false;
 	boolean wait;
+	boolean dodge=false;
 	boolean userConfirm=false;
-	int turnCounter=0;
 	Zone zone;
 	
 	enum Zone{red, yellow, green}
@@ -67,10 +72,10 @@ public class MainProc {
 			return;
 		}
 		
-		if(sonicTmp==0 && sonicCounter==0)
+		if(sonicTmp==0 && sonicCounter==0 && !dodge)
 			Sound.beepSequence();
 
-		if(sonicTmp==0 && sonicCounter==1)
+		if(sonicTmp==0 && sonicCounter==1 && !dodge)
 			Sound.beepSequenceUp();
 		
 		if(heartbeatTimer.count())
@@ -134,23 +139,28 @@ public class MainProc {
 		sonicCounter = sonicCounter%32;
 		if(sonic[31]!=0)
 		{
-			int sonicValue=0;
+			dodge=false;
+			sonicValue=0;
 			for(int i=0; i<32; i++)
 				sonicValue+=sonic[i];
 			sonicValue/=32;
 			if(
-					sonicValue<yellowZone 
-					&& (sonic[(sonicCounter+32-2)%32]/2) > redZone 
-					&& sonic[(sonicCounter+32-1)%32] < (sonic[(sonicCounter+32-2)%32]/1.6) 
-					&& sonicTmp!=0
+					(sonic[(sonicCounter+32-2)%32]/2) > redZone 
+					&& sonic[(sonicCounter+32-1)%32] < (sonic[(sonicCounter+32-2)%32]/2) 
+					&& sonicTmp!=0 
+					&& !wait
 				)
 			{
+				Sound.beepSequence();
 				zone = Zone.yellow;
+				if(wait==false)
+					waitTimer.reset();
 				wait=true;
-				waitTimer.reset();
 				errorCode=2;
+				sonicPreErrorValue=sonic[(sonicCounter+32-2)%32];
+				return;
 			}
-			else if(sonicValue<sonicMin && errorCode == 0)
+			if(sonicValue<sonicMin && errorCode == 0)
 				errorCode=2;
 			else
 				sonicTmp=sonicValue;
@@ -161,16 +171,7 @@ public class MainProc {
 		if(sonicTmp==0)
 			return;
 
-		if(zone==Zone.yellow && wait)
-		{
-			if(!waitTimer.count())
-				cHw.engine.stop();
-			else
-				wait=false;
-		}else
-		{
-			cHw.engine.forwards();
-		}
+		cHw.engine.forwards();
 		
 		if(sonicTmp<redZone)
 		{
@@ -179,7 +180,7 @@ public class MainProc {
 		}
 		else if(sonicTmp<yellowZone)
 		{
-			cHw.engine.setspeed(250);
+			cHw.engine.setspeed(200);
 			if(zone == Zone.green)
 			{
 				wait=true;
@@ -189,7 +190,7 @@ public class MainProc {
 		}
 		else
 		{
-			cHw.engine.setspeed(500);
+			cHw.engine.setspeed(300);
 			zone=Zone.green;
 		}
 	}
@@ -210,20 +211,47 @@ public class MainProc {
 	
 	private void sonicError()
 	{
+		if(zone==Zone.yellow && wait)
+		{
+			if(waitTimer.count())
+			{
+				
+				wait=false;
+				int egress=cHw.sonic.getDistance();
+				if(egress>yellowZone)
+				{
+					Sound.beepSequenceUp();
+					sonicPreErrorValue=255;
+					errorCode=0;
+					return;
+				}
+			}
+			else
+			{
+				cHw.engine.stop();
+				return;
+			}
+			
+		}
 		if(errorTimer.count())
 		{
 			errorCode=0;
 			return;
 		}
-		else if(errorTimer.get()<2500)
+		else if(errorTimer.get()<2900)
 		{
-			int sonic=cHw.sonic.getDistance();
-			if(sonic>sonicTmp && errorTimer.get()==2499)
+			if(errorTimer.get()==2900)
 			{
-				errorCode=0;
-				return;
+				sonicTmpValue=cHw.sonic.getDistance();
+				if(sonicTmpValue>sonicTmp) 
+				{
+					errorCode=0;
+					return;
+				}
+			}else
+			{
+				dodge();
 			}
-			dodge();
 		}
 		else if(errorTimer.get()==2999)
 		{
@@ -245,6 +273,7 @@ public class MainProc {
 	
 	private void dodge()
 	{
+		dodge=true;
 		if(errorTimer.get()%20==0)
 			Sound.beep();
 		if(cHw.touchLeft.isPressed() || cHw.touchRight.isPressed())
@@ -277,12 +306,15 @@ public class MainProc {
 				cHw.engine.rotateRight();
 			turnCounter+=1;
 		}
-		if(turnCounter==100)
+		if(turnCounter==75)
 		{
 			turnCounter=0;
 			cHw.engine.stop();
 			errorTimer.reset();
 			errorCode=0;
+			sonicCounter=0;
+			sonicTmp=0;
+			sonic[31]=0;
 		}
 	}
 
@@ -295,8 +327,8 @@ public class MainProc {
 			errorCode=0;
 			sonicCounter=0;
 			sonicTmp=0;
-			inStandby=false;
 			sonic[31]=0;
+			inStandby=false;
 			return;
 		}
 		if(standbyTimer.count())
