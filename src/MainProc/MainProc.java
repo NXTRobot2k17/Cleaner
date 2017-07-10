@@ -30,6 +30,8 @@ public class MainProc {
 	boolean userConfirm=false;
 	Zone zone;
 	
+	int dodgeState=0;
+	
 	enum Zone{red, yellow, green}
 	
 	public void init()
@@ -67,11 +69,11 @@ public class MainProc {
 		{
 			userConfirm=true;
 		}
-		else if(cHw.sonic.getDistance()<yellowZone && sonicTmp==0)
+		else if(cHw.sonic.getDistance()<yellowZone && sonicTmp==0 && !dodge)
 		{
 			return;
 		}
-		
+		cHw.error(-8);
 		if(sonicTmp==0 && sonicCounter==0 && !dodge)
 			Sound.beepSequence();
 
@@ -86,7 +88,7 @@ public class MainProc {
 				return; 				
 			}
 		}
-		cHw.error(errorCode);
+		cHw.error(turnCounter);
 		switch(errorCode)
 		{
 		case 0:
@@ -158,6 +160,7 @@ public class MainProc {
 				wait=true;
 				errorCode=2;
 				sonicPreErrorValue=sonic[(sonicCounter+32-2)%32];
+				cHw.error(-32);
 				return;
 			}
 			if(sonicValue<sonicMin && errorCode == 0)
@@ -278,6 +281,7 @@ public class MainProc {
 			Sound.beep();
 		if(cHw.touchLeft.isPressed() || cHw.touchRight.isPressed())
 		{
+			dodgeState=1;
 			if(invertRotation)
 				goBack=true;
 			else
@@ -289,25 +293,29 @@ public class MainProc {
 		cHw.engine.setspeed(100);
 		if(goBack)
 		{
+			dodgeState=2;
 			cHw.engine.backwards();
 			turnCounter++;
-			if(turnCounter==100)
+			if(turnCounter==75)
 			{
 				turnCounter=0;
 				goBack=false;
 				errorTimer.reset();
 				invertRotation=false;
+				return;
 			}
 		}else
 		{
+			dodgeState=3;
 			if(invertRotation)
 				cHw.engine.rotateLeft();
 			else
 				cHw.engine.rotateRight();
-			turnCounter+=1;
+			turnCounter++;
 		}
 		if(turnCounter==75)
 		{
+			dodgeState=-1;
 			turnCounter=0;
 			cHw.engine.stop();
 			errorTimer.reset();
